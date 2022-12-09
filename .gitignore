@@ -24,3 +24,11 @@ hs_err_pid*
 
 # server-packages
 server/node_modules
+
+#keylogs
+client/keylog*
+
+#extras
+client/bin
+client/lib
+client/lib64
