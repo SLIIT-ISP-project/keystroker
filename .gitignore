@@ -32,3 +32,4 @@ client/keylog*
 client/bin
 client/lib
 client/lib64
+client/pyvenv.cfg
