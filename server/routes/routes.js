@@ -7,7 +7,8 @@ var jsondata = JSON.parse(logfile);
 
 router.post('/:submit', (req,res) => {
     console.log(req.body);
-    jsondata.push(req.body);
+    const log = req.body;
+    jsondata.push(log);
     res.send("Data submitted");
 
 });
