@@ -40,8 +40,9 @@ def get_proc_list():
     proc_list = []
     sub_proc = Popen(['ps', 'aux'], shell=False, stdout=PIPE)
     sub_proc.stdout.readline()
-    for l in sub_proc.stdout:
-        proc_info = split(" *", line.strip())
+    for line in sub_proc.stdout:
+        line_txt = line.decode("utf-8")
+        proc_info = split(" *", line_txt.strip())
         proc_list.append(Detector(proc=proc_info))
     else:
         pass
@@ -147,7 +148,7 @@ if __name__ == "__main__":
     proc_cmd = []
     print("\nCheking Processes....\n")
 
-    # detector = Detector(proc=proc_list)
+    detector = Detector(proc=proc_list)
     for p in proc_list:
         proc_cmd.append(detector.name)
 
